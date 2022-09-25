@@ -4,7 +4,7 @@ import time
 # 设置超参数
 server_ip = "10.31.10.211"  # 定义本地IPv4地址
 client_num = 128  # 定义最大连接client数量
-port_id = 8000  # 定义端口号，8000为默认端口号
+port_id = 8003  # 定义端口号，8000为默认端口号
 
 # 创建套接字（会话对象）
 tcp_server = socket(AF_INET, SOCK_STREAM)
