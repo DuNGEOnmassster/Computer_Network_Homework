@@ -8,7 +8,7 @@ client = socket(AF_INET,SOCK_STREAM)
 client.connect((server_ip,port_id))
 
 while True:
-    send_data=input("输入发给服务端的信息: ") # 
+    send_data=input("输入发给服务端的信息: ")
     client.send(send_data.encode("utf-8"))
     if send_data == "exit": # 断开连接
         print("通信结束")
