@@ -1,7 +1,7 @@
 from socket import *
 
 # 设置超参数
-server_ip = "10.31.10.211"  # 定义本地IPv4地址
+server_ip = "192.168.31.74"  # 定义本地IPv4地址
 port_id = 50002  # 定义端口号
 
 # 创建套接字（会话对象）
