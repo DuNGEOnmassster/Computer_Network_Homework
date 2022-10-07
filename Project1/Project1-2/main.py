@@ -2,6 +2,7 @@ from bitstring import Bits, BitArray
 from time import time
 import argparse
 
+
 def parse_args():
     parser = argparse.ArgumentParser(description="CRC")
 
@@ -11,6 +12,7 @@ def parse_args():
                         help="bit size of a pair of data to compare")
 
     return parser.parse_args()
+
 
 class Sum_Register:
     def __init__(self, args):
@@ -36,14 +38,13 @@ class Sum_Register:
                     self.carry_in = 0
 
     def getSum(self):
-        solution = []
+        Sum = []
         for i in range(self.size):
             if self.sum[i] == 0:
-                solution.append(1)
+                Sum.append(1)
             else:
-                solution.append(0)
-        solution = BitArray(solution)
-        return solution
+                Sum.append(0)
+        return BitArray(Sum)
 
 
 def read_file(file_path):
@@ -56,15 +57,34 @@ def read_file(file_path):
     return row_data, bit_length  
 
 
+def printf(byte1, byte2, Sumr, flag):
+    if flag:
+        byte1.extend(byte2)
+        data16 = byte1.copy()
+        print("16位数据: ", data16)
+        Sumr.getAdd(data16)
+        print("当前和：", Sumr.sum)
+        byte1.clear()
+        byte2.clear()
+    else:
+        byte1.extend([0, 0, 0, 0, 0, 0, 0, 0])
+        Sumr.getAdd(byte1)
+        print("16位数据: ", byte1)
+        print("当前和：", Sumr.sum)
+
+
 def process():
     start_time = time()
+
     args = parse_args()
+    Sumr = Sum_Register(args)
+    row_data, bit_length = read_file(args.dataset)
+
     start = 0
     cnt = 1
     byte1 = []
     byte2 = []
-    Sumr = Sum_Register(args)
-    row_data, bit_length = read_file(args.dataset)
+
     while start < bit_length:
         byte_temp = []
         for i in range(start, start + args.batch_size//2):
@@ -76,19 +96,11 @@ def process():
         start = start + args.batch_size//2
         if byte1 != [] and byte2 != []:
             print(f"第{cnt}组:")
-            byte1.extend(byte2)
-            data16 = byte1.copy()
-            print("16位数据: ", data16)
-            Sumr.getAdd(data16)
-            print("当前和：", Sumr.sum)
-            byte1.clear()
-            byte2.clear()
+            printf(byte1, byte2, Sumr, flag=True)
             cnt = cnt + 1
+
     if byte1 != [] and byte2 == []:
-        byte1.extend([0, 0, 0, 0, 0, 0, 0, 0])
-        Sumr.getAdd(byte1)
-        print("16位数据: ", byte1)
-        print("当前和：", Sumr.sum)
+        printf(byte1, byte2, Sumr, flag=False)
     
     end_time = time()
     print(f"耗时{end_time-start_time:2f} sec, 最终反码校验和:{Sumr.getSum()}")
