@@ -1,3 +1,3 @@
 # Project for the 1st
 
-See details in [https://github.com/DuNGEOnmassster/Computer_Network_Homework/edit/mingzhe/Project1/Project1-1/](#Project1-1) and [https://github.com/DuNGEOnmassster/Computer_Network_Homework/edit/mingzhe/Project1/Project1-2/](#Project1-2)
+See details in [#Project1-1](https://github.com/DuNGEOnmassster/Computer_Network_Homework/tree/mingzhe/Project1/Project1-1) and [#Project1-2](https://github.com/DuNGEOnmassster/Computer_Network_Homework/tree/mingzhe/Project1/Project1-2)
