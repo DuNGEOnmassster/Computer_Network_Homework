@@ -60,9 +60,8 @@ def read_file(file_path):
 def printf(byte1, byte2, Sumr, flag):
     if flag:
         byte1.extend(byte2)
-        data16 = byte1.copy()
-        print("16位数据: ", data16)
-        Sumr.getAdd(data16)
+        print("16位数据: ", byte1)
+        Sumr.getAdd(byte1)
         print("当前和：", Sumr.sum)
         byte1.clear()
         byte2.clear()
