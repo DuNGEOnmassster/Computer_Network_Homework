@@ -66,7 +66,7 @@ def printf(byte1, byte2, Sumr, flag):
         byte1.clear()
         byte2.clear()
     else:
-        byte1.extend([0, 0, 0, 0, 0, 0, 0, 0])
+        byte1.extend([0 for i in range(Sumr.size//2)])
         Sumr.getAdd(byte1)
         print("16位数据: ", byte1)
         print("当前和：", Sumr.sum)
