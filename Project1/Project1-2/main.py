@@ -36,14 +36,13 @@ class Sum_Register:
                     self.carry_in = 0
 
     def getSum(self):
-        solution = []
+        Sum = []
         for i in range(self.size):
             if self.sum[i] == 0:
-                solution.append(1)
+                Sum.append(1)
             else:
-                solution.append(0)
-        solution = BitArray(solution)
-        return solution
+                Sum.append(0)
+        return BitArray(Sum)
 
 
 def read_file(file_path):
