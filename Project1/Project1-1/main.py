@@ -81,12 +81,13 @@ def get_segment(args):
     row_data, bit_length = load_file(args.dataset)
     start = 0
     segment_data = [] # list to store segments
+    data_str = ''
     while start <= bit_length:
         segment_data.append(row_data[start:start+args.segment_size*8]) if start + args.segment_size*8 - 1 < bit_length else segment_data.append(row_data[start:bit_length])
         start = start + args.segment_size*8
     for data in segment_data:
         print("数据段: ", data)
-        data_str = ''
+        
         for bit in data:
             data_str += '1' if bit else '0'
         print("字符串化:", data_str)
