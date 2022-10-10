@@ -90,8 +90,8 @@ def get_segment(args):
         for bit in data:
             data_str += '1' if bit else '0'
         print("字符串化:", data_str)
-        if len(data) < args.least_size*8:
-            data_str += '0' * (args.least_size*8 - len(data))
+        if len(data) < args.least_size:
+            data_str += '0' * (args.least_size - len(data))
             print(f"补零{len(data_str)}位")
     return data_str
 
