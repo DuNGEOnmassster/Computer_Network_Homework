@@ -82,8 +82,8 @@ def get_segment(args):
     start = 0
     segment_data = [] # list to store segments
     while start <= bit_length:
-        segment_data.append(row_data[start:start+args.segment_size]) if start + args.segment_size - 1 < bit_length else segment_data.append(row_data[start:bit_length])
-        start = start + args.segment_size
+        segment_data.append(row_data[start:start+args.segment_size*8]) if start + args.segment_size*8 - 1 < bit_length else segment_data.append(row_data[start:bit_length])
+        start = start + args.segment_size*8
     for data in segment_data:
         print("数据段: ", data)
         data_str = ''
