@@ -5,7 +5,7 @@ import argparse
 def parse_args():
     parser = argparse.ArgumentParser(description="TCP server")
 
-    parser.add_argument("--server_ip", default="192.168.31.74",
+    parser.add_argument("--server_ip", default="10.31.110.96",
                         help="declear server ip")
     parser.add_argument("--port", default=8003,
                         help="declear connect port")
