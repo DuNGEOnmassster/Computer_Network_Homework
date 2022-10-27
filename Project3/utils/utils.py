@@ -8,7 +8,11 @@ class terminal:
         self.successTime = 0
         self.args = args
 
-    
+
+    def get_rand_data(self):
+        return randint(1,1500)
+
+
     def get_minframe(self):
         return 2 * self.args.ColisionWindow/2 * self.args.Transmission_speed
     
@@ -36,7 +40,7 @@ class terminal:
             if self.check_Bus_state(Bus[0]): # 当前总线空闲,可以发送
                 Bus[0] |= self.ID
                 print("现在的bus：", Bus)
-                time.sleep(6)
+                time.sleep(self.get_rand_data()%7)
                 if Bus[0] == self.ID:
                     print(f"终端{self.ID}发送成功")
                     Bus[0] = 0

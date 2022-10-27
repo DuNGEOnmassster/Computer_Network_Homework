@@ -1,7 +1,6 @@
 import threading
 import argparse
 from utils.utils import terminal
-from random import randint
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Project3: connection bewteen 2 ternimals with CSMA/CD")
