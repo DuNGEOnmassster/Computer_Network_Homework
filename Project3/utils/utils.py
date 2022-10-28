@@ -29,37 +29,37 @@ class terminal:
         time = int(time*10)
         for i in range(time):
             if is_working:
-                print(f"终端{self.ID}工作中，剩余时间：", (time - i))
+                print(f"Terminal:{self.ID} is busy now, Time left: {time - i} sec")
             else:
-                print(f"终端{self.ID}等待中，剩余时间：", (time - i))
+                print(f"Terminal:{self.ID} is waiting now, Time left: {time - i} sec")
         
     
     def send_message(self, Bus):
-        print(f"terminal{self.ID} with Bus{id(Bus)}")
+        print(f"Terminal:{self.ID} with Bus{id(Bus)}")
         while self.successTime < self.args.frame_num:
-            if self.check_Bus_state(Bus[0]): # 当前总线空闲,可以发送
+            if self.check_Bus_state(Bus[0]):
                 Bus[0] |= self.ID
-                print("现在的bus：", Bus)
+                print(f"Current bus: {Bus}")
                 time.sleep(self.get_rand_data()%7)
                 if Bus[0] == self.ID:
-                    print(f"终端{self.ID}发送成功")
+                    print(f"Terminal:{self.ID} send successfully")
                     Bus[0] = 0
                     self.CollisionCounter = 0
                     randtime = randint(0, 32767) % 10
-                    print(f"终端{self.ID}随机等待{randtime}sec")
+                    print(f"Terminal:{self.ID} waiting {randtime} sec")
                     time.sleep(randtime)
                     self.successTime += 1
-                    print(f"终端{self.ID}发送成功次数：{self.successTime}")
+                    print(f"Terminal:{self.ID} success sent for {self.successTime} times")
                 else:
-                    # 发生冲突
-                    print(f"终端{self.ID}发送时发生冲突")
+                    # Collision occur
+                    print(f"Terminal:{self.ID} collision occur")
                     Bus[0] = 0
                     self.CollisionCounter += 1
                     if self.CollisionCounter <= self.args.max_retrans:
-                        # 退避重发
-                        time.sleep(self.get_wait_time())
+                        # Reset
+                        self.sleep(self.get_wait_time())
                     else:
-                        print("冲突次数>16,发送失败")
+                        print("Collision reaches upper limit, stop resending!")
                         return
-        print(f"终端{self.ID}发送完毕")
+        print(f"Terminal:{self.ID} send all messages!")
 
