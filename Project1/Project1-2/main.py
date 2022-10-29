@@ -72,13 +72,7 @@ def printf(byte1, byte2, Sumr, flag):
         print("当前和：", Sumr.sum)
 
 
-def process():
-    start_time = time()
-
-    args = parse_args()
-    Sumr = Sum_Register(args)
-    row_data, bit_length = read_file(args.dataset)
-
+def get_sum(args, Sumr, row_data, bit_length):
     start = 0
     cnt = 1
     byte1 = []
@@ -100,7 +94,14 @@ def process():
 
     if byte1 != [] and byte2 == []:
         printf(byte1, byte2, Sumr, flag=False)
-    
+
+
+def process():
+    start_time = time()
+    args = parse_args()
+    Sumr = Sum_Register(args)
+    row_data, bit_length = read_file(args.dataset)
+    get_sum(args, Sumr, row_data, bit_length)
     end_time = time()
     print(f"耗时{end_time-start_time:2f} sec, 最终反码校验和:{Sumr.getSum()}")
 
