@@ -13,5 +13,6 @@
 
 5 为什么网络通信协议不能设计为100%实现可靠通信？
 
+See [Mingzhe's implementation](https://github.com/DuNGEOnmassster/Computer_Network_Homework/tree/mingzhe/Homework4) and [Zhengbao's implementation](https://github.com/DuNGEOnmassster/Computer_Network_Homework/tree/zhengbao/Homework4)
 
 6. 假设有一个通信协议，每个分组都含有100B的开销用于首部。现在使用这个协议发送1MB的数据，然而数据在传输过程中有一个比特位被破坏了，包含该比特位的分组被丢弃。请计算当分组中数据大小为5000,10000字节大小时，“开销+丢失”分组总数是多少？分组中数据大小的最佳值时多少？
