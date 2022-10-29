@@ -10,3 +10,5 @@
 （3）在月亮上的月球车如果拍到了地球的照片，并把它们以数字形式保存在磁盘上。假设地球上的目前的任务控制是下载25MB的最新图像，则从发出数据请求到照片传输结束最少需要花费多少时间？
 3.假设一个信道受到奈奎斯特定理限制，最高码元速率为20000B/秒。如果采用振幅调制，把码元的振幅划分为16个不同等级来传输，可获得的最大数据传输速率是多少？
 4.请画出网卡硬件结构图，并说明网卡工作原理?
+
+See [Mingzhe's implementation](https://github.com/DuNGEOnmassster/Computer_Network_Homework/tree/mingzhe/Homework5) and [Zhengbao's implementation](https://github.com/DuNGEOnmassster/Computer_Network_Homework/tree/zhengbao/Homework5)
