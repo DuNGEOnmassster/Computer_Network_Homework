@@ -70,49 +70,51 @@ class CRC32:
 def load_file(file_path):
     with open(file_path, "rb") as f:
         row_data = Bits(f)
-        bit_length = len(row_data)
+        row_length = len(row_data)
         print("原始数据:", row_data)
-        print("原始数据位数:", bit_length)
+        print("原始数据位数:", row_length)
         # import pdb; pdb.set_trace()  
-    return row_data, bit_length 
+    return row_data, row_length 
 
 
-def get_segment(args):
-    row_data, bit_length = load_file(args.dataset)
+def CRC_process(data, args, i):
+    CRC_model = CRC32(data, args)
+    CRC_hex = BitArray('0b'+CRC_model.encode())
+    print("CRC编码: ", CRC_hex)
+    print("CRC后32位: ", CRC_hex[-32:])
+    if CRC_model.decode(CRC_model.encode()):
+        print(f"第{i}段接收编码无误")
+    else:
+        print(f"第{i}段接收编码有误")
+
+
+def get_segment(args, row_data, bit_length):
     start = 0
     segment_data = [] # list to store segments
     data_str = ''
     while start <= bit_length:
         segment_data.append(row_data[start:start+args.segment_size*8]) if start + args.segment_size*8 - 1 < bit_length else segment_data.append(row_data[start:bit_length])
         start = start + args.segment_size*8
+    print(f"共有{len(segment_data)}段")
+    start = 1
     for data in segment_data:
-        print("数据段: ", data)
-        
+        print(f"第{start}段\n数据段: {data}")      
         for bit in data:
             data_str += '1' if bit else '0'
-        print("字符串化:", data_str)
+        # print("字符串化:", data_str)
         if len(data) < args.least_size:
             data_str += '0' * (args.least_size - len(data))
             print(f"补零{len(data_str)}位")
+        CRC_process(data_str, args, start)
+        start += 1
     return data_str
-
-
-def CRC_process(data, args):
-    CRC_model = CRC32(data, args)
-    CRC_hex = BitArray('0b'+CRC_model.encode())
-    print("CRC编码: ", CRC_hex)
-    print("CRC后32位: ", CRC_hex[-32:])
-    if CRC_model.decode(CRC_model.encode()):
-        print("接收编码无误")
-    else:
-        print("接收编码有误")
 
 
 def process():
     start_time = time()
     args = parse_args()
-    segment = get_segment(args)
-    CRC_process(segment, args)
+    row_data, row_length = load_file(args.dataset)
+    segment = get_segment(args, row_data, row_length)
     end_time = time()
     print(f"耗时{end_time-start_time:2f} sec")
     
