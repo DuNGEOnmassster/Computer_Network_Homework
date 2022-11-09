@@ -19,3 +19,5 @@
 #### 结果：dos>check sum  文件名
 #### （1）  数据1：结果1；…… ; 数据5：结果5；
 #### （2）  计算对象简单校验和: ****；
+
+See [Mingzhe's implementation](https://github.com/DuNGEOnmassster/Computer_Network_Homework/tree/mingzhe/Project1) and [Zhengbao's implementation](https://github.com/DuNGEOnmassster/Computer_Network_Homework/tree/zhengbao/Project1)
