@@ -2,7 +2,7 @@ from socket import socket, AF_INET, SOCK_STREAM
 import time
 
 # 设置超参数
-server_ip = "192.168.31.74"  # 定义本地IPv4地址
+server_ip = "10.31.16.81"  # 定义本地IPv4地址
 client_num = 5  # 定义最大连接client数量
 port_id = 8003  # 定义端口号，8000为默认端口号
 
