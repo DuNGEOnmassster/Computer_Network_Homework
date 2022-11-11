@@ -5,14 +5,14 @@ from server import args
 
 
 def Client(args):
-    protocol = "TCP" if args.TCP_or_UDP else "UDP"
+    protocol = "TCP" if args.TCP else "UDP"
     # create the client socket
-    if args.TCP_or_UDP:
+    if args.TCP:
         c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     else:
         c = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    print(f"[+] Connecting to {args.server_host}:{args.server_port}")
     c.connect((args.server_host, args.server_port))
+    print(f"[+] Connecting to {args.server_host}:{args.server_port}")
     print(f"[+] Connected in {protocol}.")
     if args.send_file:
         # send the filename and filesize
@@ -20,7 +20,7 @@ def Client(args):
         c.send(f"{args.filename}{args.SEPARATOR}{filesize}".encode())
     
         # start sending the file
-        progress = tqdm.tqdm(range(filesize), f"Sending {args.filename}", unit="B", unit_scale=True, unit_divisor=1024)
+        progress = tqdm.tqdm(range(filesize), f"Sending {args.filename}", unit="B", unit_scale=True, unit_divisor=args.BUFFER_SIZE)
         with open(args.filename, "rb") as f:
             while True:
                 # read the bytes from the file
@@ -29,11 +29,12 @@ def Client(args):
                     # file transmitting is done
                     break
                 
-                if args.TCP_or_UDP:
-                    # TCP Use sendall to assure transimission in busy networks
+                if args.TCP:
+                    # TCP use sendall to assure transimission in busy networks
                     c.sendall(bytes_read)
                 else:
-                    c.sendto(bytes_read, (args.host,args.port))
+                    # UDP use sendto to assure transimission without binding and accepting
+                    c.sendto(bytes_read, (args.host, args.port))
                 # update the progress bar
                 progress.update(len(bytes_read))
                 

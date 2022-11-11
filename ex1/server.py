@@ -7,7 +7,7 @@ import tqdm
 def parse_args():
     parser = argparse.ArgumentParser(description="TCP and UDP socket")
 
-    parser.add_argument("--TCP_or_UDP", type=bool, default=False,
+    parser.add_argument("--TCP", type=bool, default=False,
                         help="Select use TCP(True) or UDP(False),default with True")
     parser.add_argument("--server_host", default="0.0.0.0",
                         help="declare server ip address")
@@ -37,10 +37,10 @@ def parse_args():
 
 
 def Server(args):
-    protocol = "TCP" if args.TCP_or_UDP else "UDP"
+    protocol = "TCP" if args.TCP else "UDP"
     print(f"[*] Connect with {protocol}")
     # TCP
-    if args.TCP_or_UDP:
+    if args.TCP:
         # create the server socket
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # bind the socket to our local address
@@ -63,10 +63,10 @@ def Server(args):
     # Send file
     if args.send_file:
         # receive message infos
-        if args.TCP_or_UDP:
+        if args.TCP:
             received = client_socket.recv(args.BUFFER_SIZE).decode()
         else:
-            received, client_address = s.recvfrom(args.BUFFER_SIZE)
+            received, _ = s.recvfrom(args.BUFFER_SIZE)
 
         filename, filesize = received.split(args.SEPARATOR)
         # remove absolute path if there is
@@ -74,10 +74,10 @@ def Server(args):
         filesize = int(filesize[1:]) if ">" in filesize else int(filesize)
         # start receiving the file from the socket
         # and writing to the file stream
-        progress = tqdm.tqdm(range(int(filesize)), f"Receiving {filename}", unit="B", unit_scale=True, unit_divisor=1024)
+        progress = tqdm.tqdm(range(int(filesize)), f"Receiving {filename}", unit="B", unit_scale=True, unit_divisor=args.BUFFER_SIZE)
         with open(filename, "wb") as f:
             while True:
-                if args.TCP_or_UDP:
+                if args.TCP:
                     bytes_read = client_socket.recv(args.BUFFER_SIZE)
                 else:
                     bytes_read, client_address = s.recvfrom(args.BUFFER_SIZE)
@@ -99,7 +99,7 @@ def Server(args):
     # Send text
     elif args.send_text:
         # TCP
-        if args.TCP_or_UDP:
+        if args.TCP:
             while True:
                 data = client_socket.recv(args.BUFFER_SIZE)
                 print("Receive message from client: " + data.decode('utf-8'))
@@ -111,13 +111,13 @@ def Server(args):
         else:
             while True:
                 data, client_addr = s.recvfrom(args.BUFFER_SIZE)
-                print("Receive message from client: ",data.decode("utf-8"))
+                print("Receive message from client",client_addr,": ",data.decode("utf-8"))
                 send_data = input("Enter message be sent to client: ")
                 s.sendto(send_data.encode("utf-8"), client_addr)
                 if send_data == "exit" or data == "exit":
                     break
 
-        if args.TCP_or_UDP:
+        if args.TCP:
             # close the client socket in TCP
             client_socket.close()
 
