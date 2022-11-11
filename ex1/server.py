@@ -13,6 +13,8 @@ def parse_args():
                         help="declare server ip address")
     parser.add_argument("--host", default="10.31.51.162",
                         help="declare client ip address")
+    parser.add_argument("--server_port", type=int, default=5001,
+                        help="declare server port")
     parser.add_argument("--port", type=int, default=5001,
                         help="declare port")
     parser.add_argument("--client_num", type=int, default=5,
@@ -42,10 +44,10 @@ def Server(args):
         # create the server socket
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # bind the socket to our local address
-        s.bind((args.server_host, args.port))
+        s.bind((args.server_host, args.server_port))
         # enabling our server to accept connections
         s.listen(args.client_num)
-        print(f"[*] Listening as {args.server_host}:{args.port}")
+        print(f"[*] Listening as {args.server_host}:{args.server_port}")
         # accept connection if there is any
         client_socket, client_address = s.accept() 
         # if below code is executed, that means the sender is connected
@@ -56,7 +58,7 @@ def Server(args):
         # create the server socket
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # bind the socket to our local address
-        s.bind((args.server_host, args.port))
+        s.bind((args.server_host, args.server_port))
 
     # Send file
     if args.send_file:

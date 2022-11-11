@@ -11,7 +11,7 @@ def Client(args):
         c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     else:
         c = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    print(f"[+] Connecting to {args.host}:{args.port}")
+    print(f"[+] Connecting to {args.server_host}:{args.server_port}")
     c.connect((args.host, args.port))
     print(f"[+] Connected in {protocol}.")
     if args.send_file:
