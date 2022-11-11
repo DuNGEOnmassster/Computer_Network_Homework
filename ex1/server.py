@@ -7,7 +7,7 @@ import tqdm
 def parse_args():
     parser = argparse.ArgumentParser(description="TCP and UDP socket")
 
-    parser.add_argument("--TCP_or_UDP", type=bool, default=False,
+    parser.add_argument("--TCP_or_UDP", type=bool, default=True,
                         help="Select use TCP(True) or UDP(False),default with True")
     parser.add_argument("--server_host", default="0.0.0.0",
                         help="declare server ip address")
@@ -26,7 +26,7 @@ def parse_args():
                         help="flag determine whether to send text (defualt: False)")
     parser.add_argument("--send_file", type=bool, default=False,
                         help="flag determine whether to send file (defualt: True)")
-    parser.add_argument("--filename", type=str, default="./../data/runtu2lion.mp4",
+    parser.add_argument("--filename", type=str, default="./data/runtu2lion.mp4",
                         help="declare file to be sent")
     parser.add_argument("--receive_path", type=str, default="./receive_data/",
                         help="declare where to save the file sent from server for client")
@@ -50,18 +50,21 @@ def Server(args):
         client_socket, client_address = s.accept() 
         # if below code is executed, that means the sender is connected
         print(f"[+] {client_address} is connected.")
+    
+    # UDP
     else:
         # create the server socket
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # bind the socket to our local address
         s.bind((args.server_host, args.port))
 
+    # Send file
     if args.send_file:
         # receive message infos
         if args.TCP_or_UDP:
             received = client_socket.recv(args.BUFFER_SIZE).decode()
         else:
-            received, client_address = s.recvfrom(1024)
+            received, client_address = s.recvfrom(args.BUFFER_SIZE)
 
         filename, filesize = received.split(args.SEPARATOR)
         # remove absolute path if there is
@@ -72,8 +75,10 @@ def Server(args):
         progress = tqdm.tqdm(range(int(filesize)), f"Receiving {filename}", unit="B", unit_scale=True, unit_divisor=1024)
         with open(filename, "wb") as f:
             while True:
-                # read 1024 bytes from the socket (receive)
-                bytes_read = client_socket.recv(args.BUFFER_SIZE)
+                if args.TCP_or_UDP:
+                    bytes_read = client_socket.recv(args.BUFFER_SIZE)
+                else:
+                    bytes_read, client_address = s.recvfrom(args.BUFFER_SIZE)
                 if not bytes_read:    
                     # if nothing received, file transmitting is done
                     break
@@ -89,6 +94,7 @@ def Server(args):
         # close the server socket
         s.close()
 
+    # Send text
     elif args.send_text:
         # TCP
         if args.TCP_or_UDP:

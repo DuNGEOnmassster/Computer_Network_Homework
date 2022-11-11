@@ -28,9 +28,12 @@ def Client(args):
                 if not bytes_read:
                     # file transmitting is done
                     break
-                # we use sendall to assure transimission in 
-                # busy networks
-                c.sendall(bytes_read)
+                
+                if args.TCP_or_UDP:
+                    # TCP Use sendall to assure transimission in busy networks
+                    c.sendall(bytes_read)
+                else:
+                    c.sendto(bytes_read, )
                 # update the progress bar
                 progress.update(len(bytes_read))
                 
