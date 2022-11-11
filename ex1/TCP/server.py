@@ -5,8 +5,10 @@ import tqdm
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="TCP socket")
+    parser = argparse.ArgumentParser(description="TCP and UDP socket")
 
+    parser.add_argument("--TCP_or_UDP", type=bool, default=False,
+                        help="Select use TCP(True) or UDP(False),default with True")
     parser.add_argument("--server_host", default="0.0.0.0",
                         help="declare server ip address")
     parser.add_argument("--host", default="10.31.51.162",
@@ -32,24 +34,35 @@ def parse_args():
     return parser.parse_args()
 
 
-def tcp_server(args):
-    # create the server socket
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # bind the socket to our local address
-    s.bind((args.server_host, args.port))
-    # enabling our server to accept connections
-    s.listen(args.client_num)
-    print(f"[*] Listening as {args.server_host}:{args.port}")
-
-    # accept connection if there is any
-    client_socket, address = s.accept() 
-    # if below code is executed, that means the sender is connected
-    print(f"[+] {address} is connected.")
+def Server(args):
+    protocol = "TCP" if args.TCP_or_UDP else "UDP"
+    print(f"[*] Connect with {protocol}")
+    # TCP
+    if args.TCP_or_UDP:
+        # create the server socket
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # bind the socket to our local address
+        s.bind((args.server_host, args.port))
+        # enabling our server to accept connections
+        s.listen(args.client_num)
+        print(f"[*] Listening as {args.server_host}:{args.port}")
+        # accept connection if there is any
+        client_socket, client_address = s.accept() 
+        # if below code is executed, that means the sender is connected
+        print(f"[+] {client_address} is connected.")
+    else:
+        # create the server socket
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # bind the socket to our local address
+        s.bind((args.server_host, args.port))
 
     if args.send_file:
-        # receive the file infos
-        # receive using client socket, not server socket
-        received = client_socket.recv(args.BUFFER_SIZE).decode()
+        # receive message infos
+        if args.TCP_or_UDP:
+            received = client_socket.recv(args.BUFFER_SIZE).decode()
+        else:
+            received, client_address = s.recvfrom(1024)
+
         filename, filesize = received.split(args.SEPARATOR)
         # remove absolute path if there is
         filename = os.path.basename(filename)
@@ -77,24 +90,40 @@ def tcp_server(args):
         s.close()
 
     elif args.send_text:
-        while True:
-            #接收对方发送过来的数据
-            data = client_socket.recv(1024)
-            print("Receive client message: " + data.decode('utf-8'))
-            send_data = input("Enter message be sent to client: ")
-            client_socket.send((send_data).encode('utf-8'))
-            if send_data == "exit":
-                break
-        # close the client socket
-        client_socket.close()
+        # TCP
+        if args.TCP_or_UDP:
+            while True:
+                data = client_socket.recv(args.BUFFER_SIZE)
+                print("Receive message from client: " + data.decode('utf-8'))
+                send_data = input("Enter message be sent to client: ")
+                client_socket.send((send_data).encode('utf-8'))
+                if send_data == "exit" or data == "exit":
+                    break
+        # UDP
+        else:
+            while True:
+                data, client_addr = s.recvfrom(args.BUFFER_SIZE)
+                print("Receive message from client: ",data.decode("utf-8"))
+                send_data = input("Enter message be sent to client: ")
+                s.sendto(send_data.encode("utf-8"), client_addr)
+                if send_data == "exit" or data == "exit":
+                    break
+
+        if args.TCP_or_UDP:
+            # close the client socket in TCP
+            client_socket.close()
+
         # close the server socket
         s.close()
 
     else:
         print("Failed to send file or text script, check parameters")
 
+# Make sure client and server share the same parameters when alter occurs in terminal
+args = parse_args()
+
 if __name__ == "__main__":
-    args = parse_args()
-    tcp_server(args)
+    print(args.TCP_or_UDP)
+    Server(args)
 
 

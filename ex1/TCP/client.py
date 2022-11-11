@@ -1,15 +1,19 @@
 import socket
 import os
 import tqdm
-from server import parse_args
+from server import args
 
 
-def tcp_client(args):
+def Client(args):
+    protocol = "TCP" if args.TCP_or_UDP else "UDP"
     # create the client socket
-    c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    if args.TCP_or_UDP:
+        c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    else:
+        c = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     print(f"[+] Connecting to {args.host}:{args.port}")
     c.connect((args.host, args.port))
-    print("[+] Connected.")
+    print(f"[+] Connected in {protocol}.")
     if args.send_file:
         # send the filename and filesize
         filesize = os.path.getsize(args.filename)
@@ -38,16 +42,15 @@ def tcp_client(args):
         while True:
             send_data=input("Enter message be sent to server: ")
             c.send(send_data.encode("utf-8"))
-            return_data = c.recv(1024).decode("utf-8") # 接收服务端的答复
+            return_data = c.recv(1024).decode("utf-8")
             print(f"Receive message from server: {return_data}")
-            if send_data == "exit":
+            if send_data == "exit" or return_data == "exit":
                 break
 
     else:
         print("Failed to send file or text script, check parameters")
 
 if __name__ == "__main__":
-    args = parse_args()
-    tcp_client(args)
+    Client(args)
 
 
