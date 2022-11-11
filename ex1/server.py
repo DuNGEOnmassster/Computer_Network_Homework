@@ -131,7 +131,6 @@ def Server(args):
 args = parse_args()
 
 if __name__ == "__main__":
-    print(args.TCP_or_UDP)
     Server(args)
 
 
