@@ -1,5 +1,4 @@
 import socket
-import time
 import argparse
 import os
 import tqdm
@@ -21,11 +20,11 @@ def parse_args():
     parser.add_argument("--SEPARATOR", type=str, default="SEPARATOR",
                         help="declare SEPARATOR")
 
-    parser.add_argument("--send_text", type=bool, default=False,
+    parser.add_argument("--send_text", type=bool, default=True,
                         help="flag determine whether to send text (defualt: False)")
-    parser.add_argument("--send_file", type=bool, default=True,
+    parser.add_argument("--send_file", type=bool, default=False,
                         help="flag determine whether to send file (defualt: True)")
-    parser.add_argument("--filename", type=str, default="./../data/1111.avi",
+    parser.add_argument("--filename", type=str, default="./../data/runtu2lion.mp4",
                         help="declare file to be sent")
     parser.add_argument("--receive_path", type=str, default="./receive_data/",
                         help="declare where to save the file sent from server for client")
@@ -53,8 +52,8 @@ def tcp_server(args):
         received = client_socket.recv(args.BUFFER_SIZE).decode()
         filename, filesize = received.split(args.SEPARATOR)
         # remove absolute path if there is
-        filename = os.path.basename(filename)[:-1]
-        filesize = 985 if ">" in filesize else int(filesize)
+        filename = os.path.basename(filename)
+        filesize = int(filesize[1:]) if ">" in filesize else int(filesize)
         # start receiving the file from the socket
         # and writing to the file stream
         progress = tqdm.tqdm(range(int(filesize)), f"Receiving {filename}", unit="B", unit_scale=True, unit_divisor=1024)
@@ -70,13 +69,29 @@ def tcp_server(args):
                 # update the progress bar
                 progress.update(len(bytes_read))
             
-            os.system(f"mv {filename} {args.receive_path + filename}")
+            os.system(f"mv {filename} {args.receive_path + filename}")     
 
         # close the client socket
         client_socket.close()
         # close the server socket
         s.close()
 
+    elif args.send_text:
+        while True:
+            #接收对方发送过来的数据
+            data = client_socket.recv(1024)
+            print("Receive client message: " + data.decode('utf-8'))
+            send_data = input("Enter message be sent to client: ")
+            client_socket.send((send_data).encode('utf-8'))
+            if send_data == "exit":
+                break
+        # close the client socket
+        client_socket.close()
+        # close the server socket
+        s.close()
+
+    else:
+        print("Failed to send file or text script, check parameters")
 
 if __name__ == "__main__":
     args = parse_args()

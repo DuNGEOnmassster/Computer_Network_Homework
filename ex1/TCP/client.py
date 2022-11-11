@@ -1,5 +1,4 @@
 import socket
-import argparse
 import os
 import tqdm
 from server import parse_args
@@ -7,15 +6,14 @@ from server import parse_args
 
 def tcp_client(args):
     # create the client socket
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print(f"[+] Connecting to {args.host}:{args.port}")
-    s.connect((args.host, args.port))
+    c.connect((args.host, args.port))
     print("[+] Connected.")
     if args.send_file:
         # send the filename and filesize
-        SEPARATOR = "<SEPARATOR>"
         filesize = os.path.getsize(args.filename)
-        s.send(f"{args.filename}{SEPARATOR}{filesize}".encode())
+        c.send(f"{args.filename}{args.SEPARATOR}{filesize}".encode())
     
         # start sending the file
         progress = tqdm.tqdm(range(filesize), f"Sending {args.filename}", unit="B", unit_scale=True, unit_divisor=1024)
@@ -28,11 +26,25 @@ def tcp_client(args):
                     break
                 # we use sendall to assure transimission in 
                 # busy networks
-                s.sendall(bytes_read)
+                c.sendall(bytes_read)
                 # update the progress bar
                 progress.update(len(bytes_read))
+                
+        # print(f"Restore in {args.receive_path + args.filename}")
         # close the socket
-        s.close()
+        c.close()
+    
+    elif args.send_text:
+        while True:
+            send_data=input("Enter message be sent to server: ")
+            c.send(send_data.encode("utf-8"))
+            return_data = c.recv(1024).decode("utf-8") # 接收服务端的答复
+            print(f"Receive message from server: {return_data}")
+            if send_data == "exit":
+                break
+
+    else:
+        print("Failed to send file or text script, check parameters")
 
 if __name__ == "__main__":
     args = parse_args()
