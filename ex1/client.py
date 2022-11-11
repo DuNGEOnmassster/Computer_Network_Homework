@@ -45,7 +45,7 @@ def Client(args):
         while True:
             send_data=input("Enter message be sent to server: ")
             c.send(send_data.encode("utf-8"))
-            return_data = c.recv(1024).decode("utf-8")
+            return_data = c.recv(args.BUFFER_SIZE).decode("utf-8")
             print(f"Receive message from server: {return_data}")
             if send_data == "exit" or return_data == "exit":
                 break
