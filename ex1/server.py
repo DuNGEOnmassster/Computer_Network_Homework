@@ -7,7 +7,7 @@ import tqdm
 def parse_args():
     parser = argparse.ArgumentParser(description="TCP and UDP socket")
 
-    parser.add_argument("--TCP_or_UDP", type=bool, default=True,
+    parser.add_argument("--TCP_or_UDP", type=bool, default=False,
                         help="Select use TCP(True) or UDP(False),default with True")
     parser.add_argument("--server_host", default="0.0.0.0",
                         help="declare server ip address")

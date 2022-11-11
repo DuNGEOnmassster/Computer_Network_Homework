@@ -12,7 +12,7 @@ def Client(args):
     else:
         c = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     print(f"[+] Connecting to {args.server_host}:{args.server_port}")
-    c.connect((args.host, args.port))
+    c.connect((args.server_host, args.server_port))
     print(f"[+] Connected in {protocol}.")
     if args.send_file:
         # send the filename and filesize
@@ -33,7 +33,7 @@ def Client(args):
                     # TCP Use sendall to assure transimission in busy networks
                     c.sendall(bytes_read)
                 else:
-                    c.sendto(bytes_read, )
+                    c.sendto(bytes_read, (args.host,args.port))
                 # update the progress bar
                 progress.update(len(bytes_read))
                 
