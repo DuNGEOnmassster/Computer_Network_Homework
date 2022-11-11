@@ -9,7 +9,7 @@ def parse_args():
 
     parser.add_argument("--TCP", type=bool, default=False,
                         help="Select use TCP(True) or UDP(False),default with True")
-    parser.add_argument("--server_host", default="0.0.0.0",
+    parser.add_argument("--server_host", default="127.0.0.1",
                         help="declare server ip address")
     parser.add_argument("--host", default="10.31.51.162",
                         help="declare client ip address")
@@ -48,7 +48,7 @@ def Server(args):
         # enabling our server to accept connections
         s.listen(args.client_num)
         print(f"[*] Listening as {args.server_host}:{args.server_port}")
-        # accept connection if there is any
+        # accept connection if exists
         client_socket, client_address = s.accept() 
         # if below code is executed, that means the sender is connected
         print(f"[+] {client_address} is connected.")
@@ -60,7 +60,7 @@ def Server(args):
         # bind the socket to our local address
         s.bind((args.server_host, args.server_port))
 
-    # Send file
+    # Transfer file
     if args.send_file:
         # receive message infos
         if args.TCP:
@@ -96,7 +96,7 @@ def Server(args):
         # close the server socket
         s.close()
 
-    # Send text
+    # Transfer text
     elif args.send_text:
         # TCP
         if args.TCP:

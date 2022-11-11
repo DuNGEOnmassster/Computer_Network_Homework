@@ -33,8 +33,8 @@ def Client(args):
                     # TCP use sendall to assure transimission in busy networks
                     c.sendall(bytes_read)
                 else:
-                    # UDP use sendto to assure transimission without binding and accepting
-                    c.sendto(bytes_read, (args.host, args.port))
+                    # UDP use sendto to assure transimission without listening and accepting
+                    c.sendto(bytes_read, (args.server_host, args.server_port))
                 # update the progress bar
                 progress.update(len(bytes_read))
                 
