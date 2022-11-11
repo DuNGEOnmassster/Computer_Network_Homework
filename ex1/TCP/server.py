@@ -27,6 +27,8 @@ def parse_args():
                         help="flag determine whether to send file (defualt: True)")
     parser.add_argument("--filename", type=str, default="./../data/1111.avi",
                         help="declare file to be sent")
+    parser.add_argument("--receive_path", type=str, default="./receive_data/",
+                        help="declare where to save the file sent from server for client")
 
     return parser.parse_args()
 
@@ -61,13 +63,14 @@ def tcp_server(args):
                 # read 1024 bytes from the socket (receive)
                 bytes_read = client_socket.recv(args.BUFFER_SIZE)
                 if not bytes_read:    
-                    # nothing is received
-                    # file transmitting is done
+                    # if nothing received, file transmitting is done
                     break
-                # write to the file the bytes we just received
+                # write the bytes we just received to file
                 f.write(bytes_read)
                 # update the progress bar
                 progress.update(len(bytes_read))
+            
+            os.system(f"mv {filename} {args.receive_path + filename}")
 
         # close the client socket
         client_socket.close()
