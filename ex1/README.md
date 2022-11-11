@@ -18,4 +18,4 @@ Both client and server should have the ability to send and receive message from 
 
 Transmission of multimedia files: The client sends a video file to the server, which can be played on the server; during the sending process, it will "stop the network interface" (3 to 6 seconds) to check whether the file can be transmitted normally.
 
-
+See [Mingzhe's implementation](https://github.com/DuNGEOnmassster/Computer_Network_Homework/tree/mingzhe/ex1) and [Zhengbao's implementation](https://github.com/DuNGEOnmassster/Computer_Network_Homework/tree/zhengbao/ex1)
