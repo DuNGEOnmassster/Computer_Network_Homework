@@ -1,4 +1,4 @@
-# ex1 for Computer Network experiment
+# Computer Network experiment 1
 
 ## Requirement
 
