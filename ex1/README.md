@@ -45,7 +45,7 @@ ex1
 
 ## Setup
 
-Even though this is a simple project, you are recommended to setup with a independent conda virtual envirnment
+Even though this is a simple project, you are recommended to setup with an independent conda virtual envirnment
 
 ```shell script
 conda create -n py310 python=3.10
