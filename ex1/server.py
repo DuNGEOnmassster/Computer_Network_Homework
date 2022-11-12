@@ -69,9 +69,9 @@ def Server(args):
             received, _ = s.recvfrom(args.BUFFER_SIZE)
             received = received.decode()
 
-        print(f"receive = {received}")
+        # print(f"receive = {received}")
         filename, filesize = received.split(args.SEPARATOR)
-        print(f"filename = {filename}, filesize = {filesize}")
+        # print(f"filename = {filename}, filesize = {filesize}")
         # remove absolute path if exists
         filename = os.path.basename(filename)
         filesize = int(filesize[1:]) if ">" in filesize else int(filesize)
@@ -85,10 +85,10 @@ def Server(args):
                     if not bytes_read:    
                         # if nothing received, file transmitting is done
                         break
-                # write the bytes we just received to file
-                f.write(bytes_read)
-                # update the progress bar
-                progress.update(len(bytes_read))
+                    # write the bytes we just received to file
+                    f.write(bytes_read)
+                    # update the progress bar
+                    progress.update(len(bytes_read))
 
             # UDP
             else:

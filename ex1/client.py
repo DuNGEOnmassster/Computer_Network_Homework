@@ -14,7 +14,8 @@ def Client(args):
         c = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     # c.connect((args.server_host, args.server_port))
     print(f"[+] Connecting to {args.server_host}:{args.server_port}")
-    print(f"[+] Connected in {protocol}.")
+    print(f"[+] Connected with {protocol}.")
+
     if args.send_file:
         # send the filename and filesize
         filesize = os.path.getsize(args.filename)
@@ -62,6 +63,7 @@ def Client(args):
 
     else:
         print("Failed to send file or text script, check parameters")
+        c.close()
 
 if __name__ == "__main__":
     Client(args)
