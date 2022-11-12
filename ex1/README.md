@@ -50,5 +50,38 @@ python client.py --TCP <True or False> --send_file <True or False> --filename <p
 
 Or you can simply run with `python server.py` and `python client.py` and adjust parameters in [server.parse_args()](./server.py)
 
+## Demos
+
+UDP text
+
+![](./readme_png/udp_text.png)
+
+UDP file
+
+![](./readme_png/udp_file.png)
+
+TCP text
+![](./readme_png/tcp_text.png)
+
+TCP file
+![](./readme_png/tcp_file.png)
+
+And if you run
+
+```
+python server.py --TCP True --send_file True --filename ./data/1111.avi --receive_path ./
+```
+
+and 
+
+```
+python client.py --TCP True --send_file True --filename ./data/1111.avi --receive_path ./
+```
+
+you get
+
+server         |  client
+:-------------------------:|:-------------------------:
+![](./readme_png/bar_show1.png)  |  ![](./readme_png/bar_show2.png)
 
 #### Hopefully you will like it.
