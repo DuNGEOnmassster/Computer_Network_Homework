@@ -18,6 +18,30 @@ Both client and server should have the ability to send and receive message from 
 
 Transmission of multimedia files: The client sends a video file to the server, which can be played on the server; during the sending process, it will "stop the network interface" (3 to 6 seconds) to check whether the file can be transmitted normally.
 
+## Project Tree
+
+ex1
+├─ .DS_Store
+├─ README.md
+├─ __pycache__
+│  └─ server.cpython-310.pyc
+├─ client.py
+├─ data
+│  ├─ 1111.avi
+│  ├─ runtu2lion.mp4
+│  └─ test.txt
+├─ readme_png
+│  ├─ bar_show1.png
+│  ├─ bar_show2.png
+│  ├─ tcp_file.png
+│  ├─ tcp_text.png
+│  ├─ udp_file.png
+│  └─ udp_text.png
+├─ receive_data
+│  └─ runtu2lion.mp4
+└─ server.py
+
+
 ## Setup
 
 Even though this is a simple project, you are recommended to setup with a independent conda virtual envirnment
