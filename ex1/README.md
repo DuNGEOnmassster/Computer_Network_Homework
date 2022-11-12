@@ -20,6 +20,7 @@ Transmission of multimedia files: The client sends a video file to the server, w
 
 ## Project Tree
 
+```
 ex1
 ├─ .DS_Store
 ├─ README.md
@@ -40,7 +41,7 @@ ex1
 ├─ receive_data
 │  └─ runtu2lion.mp4
 └─ server.py
-
+```
 
 ## Setup
 
