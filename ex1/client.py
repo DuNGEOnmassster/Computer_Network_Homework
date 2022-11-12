@@ -9,16 +9,20 @@ def Client(args):
     # create the client socket
     if args.TCP:
         c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        c.connect((args.server_host, args.server_port))
     else:
         c = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    c.connect((args.server_host, args.server_port))
+    # c.connect((args.server_host, args.server_port))
     print(f"[+] Connecting to {args.server_host}:{args.server_port}")
     print(f"[+] Connected in {protocol}.")
     if args.send_file:
         # send the filename and filesize
         filesize = os.path.getsize(args.filename)
-        c.send(f"{args.filename}{args.SEPARATOR}{filesize}".encode())
-    
+        if args.TCP:
+            c.send(f"{args.filename}{args.SEPARATOR}{filesize}".encode())
+        else:
+            c.sendto(f"{args.filename}{args.SEPARATOR}{filesize}".encode(), (args.server_host, args.server_port))
+
         # start sending the file
         progress = tqdm.tqdm(range(filesize), f"Sending {args.filename}", unit="B", unit_scale=True, unit_divisor=args.BUFFER_SIZE)
         with open(args.filename, "rb") as f:
@@ -33,8 +37,6 @@ def Client(args):
                     # TCP use sendall to assure transimission in busy networks
                     c.sendall(bytes_read)
                 else:
-                    c.close()
-                    c = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                     # UDP use sendto to assure transimission without listening and accepting
                     c.sendto(bytes_read, (args.server_host, args.server_port))
                 # update the progress bar
@@ -47,10 +49,11 @@ def Client(args):
     elif args.send_text:
         while True:
             send_data=input("Enter message be sent to server: ")
-            c.send(send_data.encode("utf-8"))
             if args.TCP:
+                c.send(send_data.encode("utf-8"))
                 return_data = c.recv(args.BUFFER_SIZE).decode("utf-8")
             else:
+                c.sendto(send_data.encode("utf-8"), (args.server_host, args.server_port))
                 return_data, _ = c.recvfrom(args.BUFFER_SIZE)
                 return_data = return_data.decode("utf-8")
             print(f"Receive message from server: {return_data}")

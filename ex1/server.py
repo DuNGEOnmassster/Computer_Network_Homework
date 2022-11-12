@@ -78,27 +78,42 @@ def Server(args):
         # start receiving the file from the socket and writing to the file stream
         progress = tqdm.tqdm(range(int(filesize)), f"Receiving {filename}", unit="B", unit_scale=True, unit_divisor=args.BUFFER_SIZE)
         with open(filename, "wb") as f:
-            while True:
-                if args.TCP:
+            # TCP
+            if args.TCP:
+                while True:
                     bytes_read = client_socket.recv(args.BUFFER_SIZE)
-                else:
-                    bytes_read, client_address = s.recvfrom(args.BUFFER_SIZE)
-                if not bytes_read:    
-                    # if nothing received, file transmitting is done
-                    break
+                    if not bytes_read:    
+                        # if nothing received, file transmitting is done
+                        break
                 # write the bytes we just received to file
                 f.write(bytes_read)
                 # update the progress bar
                 progress.update(len(bytes_read))
-            
+
+            # UDP
+            else:
+                try:
+                    while True:
+                        s.settimeout(min(3,filesize/1000000))
+                        bytes_read, client_address = s.recvfrom(args.BUFFER_SIZE)
+                        if not bytes_read:    
+                        # if nothing received, file transmitting is done
+                            break
+                    # write the bytes we just received to file
+                    f.write(bytes_read)
+                except socket.timeout:
+                    # close the server socket
+                    if os.path.exists(args.receive_path + filename):
+                        print(f"UDP Received, Restore in {args.receive_path + args.filename}")
+                    s.close()
+
             os.system(f"mv {filename} {args.receive_path + filename}")     
 
         if args.TCP:
             # close the client socket in TCP
             client_socket.close()
-
-        # close the server socket
-        s.close()
+            # close the server socket
+            s.close()
 
     # Transfer text
     elif args.send_text:
