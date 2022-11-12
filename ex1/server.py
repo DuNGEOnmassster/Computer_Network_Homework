@@ -67,15 +67,15 @@ def Server(args):
             received = client_socket.recv(args.BUFFER_SIZE).decode()
         else:
             received, _ = s.recvfrom(args.BUFFER_SIZE)
+            received = received.decode()
 
-        # print(f"receive = {received}")
+        print(f"receive = {received}")
         filename, filesize = received.split(args.SEPARATOR)
-        # print(f"filename = {filename}, filesize = {filesize}")
-        # remove absolute path if there is
+        print(f"filename = {filename}, filesize = {filesize}")
+        # remove absolute path if exists
         filename = os.path.basename(filename)
         filesize = int(filesize[1:]) if ">" in filesize else int(filesize)
-        # start receiving the file from the socket
-        # and writing to the file stream
+        # start receiving the file from the socket and writing to the file stream
         progress = tqdm.tqdm(range(int(filesize)), f"Receiving {filename}", unit="B", unit_scale=True, unit_divisor=args.BUFFER_SIZE)
         with open(filename, "wb") as f:
             while True:

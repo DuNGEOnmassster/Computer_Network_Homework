@@ -33,6 +33,8 @@ def Client(args):
                     # TCP use sendall to assure transimission in busy networks
                     c.sendall(bytes_read)
                 else:
+                    c.close()
+                    c = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                     # UDP use sendto to assure transimission without listening and accepting
                     c.sendto(bytes_read, (args.server_host, args.server_port))
                 # update the progress bar
@@ -46,7 +48,11 @@ def Client(args):
         while True:
             send_data=input("Enter message be sent to server: ")
             c.send(send_data.encode("utf-8"))
-            return_data = c.recv(args.BUFFER_SIZE).decode("utf-8")
+            if args.TCP:
+                return_data = c.recv(args.BUFFER_SIZE).decode("utf-8")
+            else:
+                return_data, _ = c.recvfrom(args.BUFFER_SIZE)
+                return_data = return_data.decode("utf-8")
             print(f"Receive message from server: {return_data}")
             if send_data == "exit" or return_data == "exit":
                 break
