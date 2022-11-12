@@ -9,7 +9,7 @@ def parse_args():
 
     parser.add_argument("--TCP", type=bool, default=False,
                         help="Select use TCP(True) or UDP(False),default with True")
-    parser.add_argument("--server_host", default="127.0.0.1",
+    parser.add_argument("--server_host", default="0.0.0.0",
                         help="declare server ip address")
     parser.add_argument("--host", default="10.31.51.162",
                         help="declare client ip address")
@@ -68,7 +68,9 @@ def Server(args):
         else:
             received, _ = s.recvfrom(args.BUFFER_SIZE)
 
+        # print(f"receive = {received}")
         filename, filesize = received.split(args.SEPARATOR)
+        # print(f"filename = {filename}, filesize = {filesize}")
         # remove absolute path if there is
         filename = os.path.basename(filename)
         filesize = int(filesize[1:]) if ">" in filesize else int(filesize)
@@ -91,8 +93,10 @@ def Server(args):
             
             os.system(f"mv {filename} {args.receive_path + filename}")     
 
-        # close the client socket
-        client_socket.close()
+        if args.TCP:
+            # close the client socket in TCP
+            client_socket.close()
+
         # close the server socket
         s.close()
 
@@ -126,6 +130,12 @@ def Server(args):
 
     else:
         print("Failed to send file or text script, check parameters")
+        if args.TCP:
+            # close the client socket in TCP
+            client_socket.close()
+
+        # close the server socket
+        s.close()
 
 # Make sure client and server share the same parameters when alter occurs in terminal
 args = parse_args()
