@@ -3,6 +3,13 @@ import numpy as np
 from bitstring import BitArray
 
 
+def binary_to_int(bits:BitArray, length):
+    sum_int = 0
+    for i in range(length):
+        sum_int += 2**(length-i-1) * bits[i]
+    return sum_int
+
+
 class IpHead:
     def __init__(self, version, service, id_ip, sign, slice_shift, survival_time, protocol, srcAddr, dstAddr, opt_part=None):
         self.version = version              # ip版本，4bit
@@ -103,23 +110,6 @@ class sum_container:
         return solution
 
 
-def binary_to_int(bits:BitArray, length):
-    sum_int = 0
-    for i in range(length):
-        sum_int += 2**(length-i-1) * bits[i]
-    return sum_int
-
-
-def binAddr_to_ip(bits:BitArray):
-    ans = ''
-    for i in range(0, 32, 8):
-        section = binary_to_int(bits[i:i+8], 8)
-        ans += str(section)
-        if i != 24:
-            ans += '.'
-    return ans
-
-
 class IpGroup:
     def __init__(self, head:IpHead, data):
         self.Header = head
@@ -129,7 +119,7 @@ class IpGroup:
 class Terminal:
     def __init__(self, ip, args):
         self.ip_str = ip
-        self.ip = self.get_binary_ip(ip)
+        self.ip = self.ip_to_binAddr(ip)
         self.identification = 0   
         self.slice_joint = []      
         self.send_queue = []      
@@ -137,7 +127,7 @@ class Terminal:
         self.args = args
 
 
-    def get_binary_ip(self, ip: str):
+    def ip_to_binAddr(self, ip: str):
         ip_parts = ip.split('.')
         ip = BitArray([])
         for part in ip_parts:
@@ -147,6 +137,16 @@ class Terminal:
                 part = BitArray(np.zeros(8-len(part))) + part
                 ip += part
         return ip
+
+
+    def binAddr_to_ip(self, bits):
+        ans = ''
+        for i in range(0, 32, 8):
+            section = binary_to_int(bits[i:i+8], 8)
+            ans += str(section)
+            if i != 24:
+                ans += '.'
+        return ans
 
 
     def create_data(self):
@@ -184,7 +184,7 @@ class Terminal:
         survival_time = BitArray([0, 1, 0, 0, 0, 0, 0, 0])  # 生存时间初始化为64
         protocol = BitArray([0 for i in range(8)])  
         srcAddr = self.ip
-        dstAddr = self.get_binary_ip(destination)
+        dstAddr = self.ip_to_binAddr(destination)
         head = IpHead(version, service, id_ip, sign, slice_shift, survival_time, protocol, srcAddr, dstAddr)
         return head
 
@@ -212,6 +212,8 @@ class Terminal:
                 group = IpGroup(head, data_slice)
                 groups.append(group)
                 self.identification += 1
+                print(f"[*] 创建一组IP分组，不需要继续分片")
+                print
                 break
             else:
                 head.sign = BitArray([0, 0, 1])
@@ -221,6 +223,7 @@ class Terminal:
                 group = IpGroup(head, data_slice)
                 groups.append(group)
                 start += 12000-160
+                print(f"[*] 创建一组IP分组，还需要继续分片")
         for group in groups:
             self.send_queue.append(group)
 
@@ -239,6 +242,13 @@ class Terminal:
         return head_len_int
 
 
+    def translate_total_len(self, group):
+        total_len_bin = group[16:32]
+        total_len_int = binary_to_int(total_len_bin, 16)
+        print(f"[*] IP分组总长度：{total_len_int} Bytes")
+        return total_len_int
+
+
     def translate_service(self, group):
         service = group[8:16]
         priority = service[0:3]
@@ -249,13 +259,6 @@ class Terminal:
         C = service[6]
         print(f"[*] Service: priority {priority_int}, 低延迟：{D}, 高吞吐量：{T}, 高可靠性：{R}, 选择代价更小链路：{C}")
         return priority_int, D, T, R, C
-
-
-    def translate_total_len(self, group):
-        total_len_bin = group[16:32]
-        total_len_int = binary_to_int(total_len_bin, 16)
-        print(f"[*] IP分组总长度：{total_len_int} Bytes")
-        return total_len_int
 
 
     def translate_id(self, group):
@@ -299,16 +302,16 @@ class Terminal:
     def translate_Addr(self, group):
         src = group[96:128]
         dst = group[128:160]
-        src = binAddr_to_ip(src)
-        dst = binAddr_to_ip(dst)
+        src = self.binAddr_to_ip(src)
+        dst = self.binAddr_to_ip(dst)
         print(f"[*] 源地址：{src}，目的地址：{dst}")
         return src, dst
 
     def run(self, group):
         version = self.translate_version(group)
         head_len = self.translate_head_len(group)
-        priority, d, t, r, c = self.translate_service(group)
         total_len = self.translate_total_len(group)
+        priority, d, t, r, c = self.translate_service(group)
         id_ip = self.translate_id(group)
         flag, shift = self.translate_slice(group)
         ttl = self.translate_ttl(group)
@@ -317,8 +320,8 @@ class Terminal:
         return version, head_len, id_ip, flag, shift
 
 
-    def translate(self, group):
-        print("------开始传送数据------")
+    def translate(self, group, cnt):
+        print(f"------开始解析IP Group{cnt}------")
         src, dst = self.translate_Addr(group)
         if dst != self.ip_str:
             print("[!] IP地址匹配失败!")
@@ -331,23 +334,30 @@ class Terminal:
                         break
                     i += 1
                 self.slice_joint.insert(i, [id_ip, flag, shift, group[head_len*8:]])
-        print(f"[*] 完成一组 IPV{version} 分组\n")
+        print(f"[*] 完成一组 IPV{version} 分组接收\n")
 
 
     def send(self, bus):
+        print(f"\n------BUS upload IP Groups------")
         while len(self.send_queue) != 0:
             a_group = self.send_queue.pop(0)
             group_bits = a_group.Header.get_bits()
             group_bits += a_group.data
             bus.append(group_bits)
+            print(f"[*] 完成一组 IPV4 分组上传")
+        print(f"------BUS upload IP Groups finished------")
 
 
     def receive(self, bus):
+        print(f"\n------BUS download IP Groups------")
         while len(bus) !=0:
             self.recv_queue.append(bus.pop(0))
+        print(f"------BUS download IP Groups finished------\n")
+
+        cnt = 1
         for group in self.recv_queue:
-            self.translate(group)
-        # get rid of slices...
+            self.translate(group, cnt)
+            cnt += 1
         while len(self.slice_joint) != 0:
             base = self.slice_joint.pop(0)
             length = len(self.slice_joint)
@@ -357,4 +367,4 @@ class Terminal:
                     base[3] += self.slice_joint[i][3]
                     self.slice_joint.pop(i)
                     length -= 1
-            print(f"[+] Receiver成功接收数据!\n[+] 数据长度:{len(base[3])//8} Bytes, 数据内容: {base[3]}")
+            print(f"[+] Receiver成功接收{cnt-1}组数据!\n[+] 数据长度:{len(base[3])//8} Bytes, 数据内容: {base[3]}")

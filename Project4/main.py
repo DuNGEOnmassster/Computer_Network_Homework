@@ -16,16 +16,15 @@ def parse_args():
     return parser.parse_args()
 
 
-def send():
+def process():
     args = parse_args()
     sender = Terminal(args.sender_ip, args)
     receiver = Terminal(args.receiver_ip, args)
     bus = []
-    receiver_ip2 = args.receiver_ip[:-1]+str(int(args.receiver_ip[-1])+64)
-    sender.create_ipGroup(args.receiver_ip)
-    # sender.create_ipGroup(receiver_ip2)
+    # sender.create_ipGroup(args.receiver_ip)
+    sender.create_ipGroup('0.0.0.1')
     sender.send(bus)
     receiver.receive(bus)
 
 if __name__ == "__main__":
-    send()
+    process()
