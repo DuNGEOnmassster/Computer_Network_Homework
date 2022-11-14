@@ -36,6 +36,7 @@ class IpHead:
         bits += self.options
         return bits
 
+
     def get_head_len(self):
         if self.options is not None:
             le = 20+len(self.options//8)

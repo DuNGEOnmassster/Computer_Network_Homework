@@ -153,6 +153,7 @@ class Terminal:
         seed = random.randint(self.args.min_data_size, self.args.max_data_size)*8 # 随机数据大小
         data_list = np.random.randint(0, 2, seed)
         data_bitarray = BitArray(data_list)
+        print(f"[+] Sender成功创建数据!\n[+] 数据长度: {int(len(data_bitarray)/8)} Bytes, 数据内容: {data_bitarray}\n")
         return data_bitarray
 
 
@@ -189,6 +190,7 @@ class Terminal:
 
 
     def create_ipGroup(self, dst):
+        print(f"------开始创建IP分组------")
         groups = []
         data = self.create_data()
         data_len = len(data)
@@ -316,7 +318,7 @@ class Terminal:
 
 
     def translate(self, group):
-        print("[*] Start Translate")
+        print("------开始传送数据------")
         src, dst = self.translate_Addr(group)
         if dst != self.ip_str:
             print("[!] IP地址匹配失败!")
@@ -355,4 +357,4 @@ class Terminal:
                     base[3] += self.slice_joint[i][3]
                     self.slice_joint.pop(i)
                     length -= 1
-            print(f"成功接收数据, 数据长度:{len(base[3])//8} Bytes, 数据内容: {base[3]}")
+            print(f"[+] Receiver成功接收数据!\n[+] 数据长度:{len(base[3])//8} Bytes, 数据内容: {base[3]}")
