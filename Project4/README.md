@@ -14,3 +14,17 @@ IP分组是网络层传输的基本单元，通过构造、发送、接收和解
 
 接收端计算机：接收到该IP分子，并解析IP分组首部各个字段，将首部各个字段解析值打印在屏幕；
 
+
+```
+Project4
+├─ README.md
+├─ main.py
+├─ reference
+├─ test.py
+└─ utils
+   ├─ __pycache__
+   │  ├─ common.cpython-310.pyc
+   │  └─ utils.cpython-310.pyc
+   └─ utils.py
+
+```
