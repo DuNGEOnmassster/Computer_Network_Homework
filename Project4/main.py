@@ -6,7 +6,7 @@ def parse_args():
 
     parser.add_argument("--sender_ip",default="127.0.0.1",
                         help="declare sender ip address")
-    parser.add_argument("--receiver_ip", default='10.31.51.16',
+    parser.add_argument("--receiver_ip", default='10.31.165.241',
                         help="declare recevier ip address")
     parser.add_argument("--min_data_size", type=int, default=1500,
                         help="declare minimum size of data")
