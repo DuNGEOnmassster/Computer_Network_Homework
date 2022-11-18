@@ -1,18 +1,50 @@
 import base64
 import struct
 
-import argparse
-from fcntl import ioctl
-import socket
+from argparse import (
+    ArgumentParser,
+)
+from fcntl import (
+    ioctl,
+)
+from socket import (
+    BPF,
+    AF_INET,
+    SOCK_DGRAM,
+    SOCK_RAW,
+    IPPROTO_RAW,
+    socket,
+)
+
 
 def mac_aton(a):
+    '''
+        Convert readable MAC address to binary format.
+
+        Arguments
+            a: readable format, str type of Colon-Separated Hexadecimal.
+
+        Returns
+            A bytes type of size 6, which is the binary format.
+    '''
+
     return base64.b16decode(a.upper().replace(':', ''))
 
 
 def fetch_iface_mac(iface, s=None):
+    '''
+        Fetch MAC address of given iface.
+
+        Arguments
+            iface: iface name, str type.
+
+        Returns
+            A bytes type of size 6, which is the MAC address in binary format.
+    '''
+
     # create socket if given, any type is ok
     if not s:
-        s = socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s = socket(AF_INET, SOCK_DGRAM)
 
     # pack iface name to struct ifreq
     iface_buf = struct.pack('64s', iface.encode('utf8'))
@@ -25,6 +57,20 @@ def fetch_iface_mac(iface, s=None):
 
 
 def send_ether(iface, to, _type, data, s=None):
+    '''
+        Send data through ethernet protocol, using raw socket.
+
+        Arguments
+            iface: name of iface for sending, str type.
+
+            to: destination MAC addres, str type for readable or
+                bytes type for binary.
+
+            _type: protocol type, int type.
+
+            data: data to send, str type or bytes type.
+    '''
+
     # if destination address is readable format, convert first
     if isinstance(to, str):
         to = mac_aton(to)
@@ -35,13 +81,14 @@ def send_ether(iface, to, _type, data, s=None):
 
     # create raw socket if not given
     if s is None:
-        s = socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_IP)
+        s = socket(BPF, SOCK_RAW)
 
     # bind to the sending iface
     s.bind((iface, 0))
 
     # get MAC address of sending iface, which is the source address
     fr = fetch_iface_mac(iface, s)
+
 
     with open("data/1111.avi", "rb") as f:
         while True:
@@ -58,12 +105,37 @@ def send_ether(iface, to, _type, data, s=None):
             # send the ethernet frame
             s.send(frame)
 
+    with open("data/1111.avi", "wb") as f:
+        while True:
+            bytes_read = s.recv(1024)
+            if not bytes_read:    
+                # if nothing received, file transmitting is done
+                break
+            # write the bytes we just received to file
+            f.write(bytes_read)
+    s.close()
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description='Send ethernet frame.')
+    '''
+        Parse command line arguments.
+
+        Arguments
+
+        Returns
+            An argparse.Namespace is return, in which command options and
+            arguments are stored.
+    '''
+
+    # parser for command line arguments
+    parser = ArgumentParser(description='Send ethernet frame.')
 
     # Argument: name of iface for sending
-    parser.add_argument('--iface', dest='iface', required=True)
+    parser.add_argument(
+        '-i',
+        '--iface',
+        dest='iface',
+        required=True,
+    )
     # Argument: destination MAC address
     parser.add_argument(
         '-t',
@@ -112,6 +184,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-# python send_ether.py -i en0 -t b0:be:83:7a:20:fa -T 0x1024 -d "Hello, world"
-# python send_ether.py -i enp7s0 -t 00:2B:67:6E:37:E3 -T 0x1024 -d "Hello, world"
