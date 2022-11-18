@@ -6,7 +6,7 @@ def parse_args():
 
     parser.add_argument("--sender_ip",default="127.0.0.1",
                         help="declare sender ip address")
-    parser.add_argument("--receiver_ip", default='10.31.51.16',
+    parser.add_argument("--receiver_ip", default='10.31.165.241',
                         help="declare recevier ip address")
     parser.add_argument("--min_data_size", type=int, default=1500,
                         help="declare minimum size of data")
@@ -21,8 +21,8 @@ def process():
     sender = Terminal(args.sender_ip, args)
     receiver = Terminal(args.receiver_ip, args)
     bus = []
-    # sender.create_ipGroup(args.receiver_ip)
-    sender.create_ipGroup('0.0.0.1')
+    sender.create_ipGroup(args.receiver_ip)
+    # sender.create_ipGroup('0.0.0.1')
     sender.send(bus)
     receiver.receive(bus)
 
