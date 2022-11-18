@@ -21,8 +21,8 @@ def process():
     sender = Terminal(args.sender_ip, args)
     receiver = Terminal(args.receiver_ip, args)
     bus = []
-    # sender.create_ipGroup(args.receiver_ip)
-    sender.create_ipGroup('0.0.0.1')
+    sender.create_ipGroup(args.receiver_ip)
+    # sender.create_ipGroup('0.0.0.1')
     sender.send(bus)
     receiver.receive(bus)
 
