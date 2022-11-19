@@ -8,7 +8,7 @@ from fcntl import (
     ioctl,
 )
 from socket import (
-    BPF,
+    AF_PACKET,
     AF_INET,
     SOCK_DGRAM,
     SOCK_RAW,
@@ -81,7 +81,7 @@ def send_ether(iface, to, _type, data, s=None):
 
     # create raw socket if not given
     if s is None:
-        s = socket(BPF, SOCK_RAW)
+        s = socket(AF_PACKET, SOCK_RAW)
 
     # bind to the sending iface
     s.bind((iface, 0))
@@ -104,38 +104,17 @@ def send_ether(iface, to, _type, data, s=None):
 
             # send the ethernet frame
             s.send(frame)
-
-    with open("data/1111.avi", "wb") as f:
-        while True:
-            bytes_read = s.recv(1024)
-            if not bytes_read:    
-                # if nothing received, file transmitting is done
-                break
-            # write the bytes we just received to file
-            f.write(bytes_read)
+    
     s.close()
 
+
+
 def parse_arguments():
-    '''
-        Parse command line arguments.
-
-        Arguments
-
-        Returns
-            An argparse.Namespace is return, in which command options and
-            arguments are stored.
-    '''
-
     # parser for command line arguments
     parser = ArgumentParser(description='Send ethernet frame.')
 
     # Argument: name of iface for sending
-    parser.add_argument(
-        '-i',
-        '--iface',
-        dest='iface',
-        required=True,
-    )
+    parser.add_argument('--iface', dest='iface', required=True, default="")
     # Argument: destination MAC address
     parser.add_argument(
         '-t',
