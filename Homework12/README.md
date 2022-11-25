@@ -38,3 +38,5 @@
 |   |   202.197.9.0/24 ： 202.117.00001001.00000000 |
 |   |   202.197.10.0/24： 202.117.00001010.00000000 |
 |   |   202.197.11.0/24： 202.117.00001011.00000000 |
+
+See [Mingzhe's implementation](https://github.com/DuNGEOnmassster/Computer_Network_Homework/tree/mingzhe/Homework12) and [Zhengbao's implementation](https://github.com/DuNGEOnmassster/Computer_Network_Homework/tree/zhengbao/Homework12)
