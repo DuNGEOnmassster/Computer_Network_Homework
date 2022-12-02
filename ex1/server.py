@@ -9,7 +9,7 @@ def parse_args():
 
     parser.add_argument("--TCP", type=bool, default=False,
                         help="Select use TCP(True) or UDP(False),default with True")
-    parser.add_argument("--server_host", default="0.0.0.0",
+    parser.add_argument("--server_host", default="192.168.31.74",
                         help="declare server ip address")
     parser.add_argument("--host", default="10.31.51.162",
                         help="declare client ip address")

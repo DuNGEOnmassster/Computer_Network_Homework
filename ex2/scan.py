@@ -12,9 +12,9 @@ def portScanner(host,port, busy):
 
 def main():
     busy = []
-    setdefaulttimeout(1)
+    setdefaulttimeout(0.1)
     for p in range(1,1024):
-        portScanner('10.31.165.241',p, busy)
+        portScanner('192.168.31.74',p, busy)
     print(busy)
 
 if __name__ == '__main__':
